@@ -1,12 +1,101 @@
-import React from "react";
+import React, { useRef } from "react";
 import Header from "./Header";
 import { useState } from "react";
+import ValidateData from "../utils/ValidateData";
+import { auth } from "../utils/Firebase";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { getErrorMessage } from "../utils/utils";
+import { useNavigate } from "react-router-dom";
+import { updateProfile } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
 
 function Login() {
   const [isSignIn, setIsSignIn] = useState(true);
+  const [errorMessage, seterrorMessage] = useState(null);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const email = useRef(null);
+  const password = useRef(null);
+  const name = useRef(null);
+
   const handleSignUp = () => {
     setIsSignIn(!isSignIn);
+    email.current.value = "";
+    password.current.value = "";
+    if (name.current) name.current.value = "";
+    seterrorMessage("");
   };
+
+  const submitHandler = () => {
+    if (!isSignIn) {
+      const message = ValidateData(email.current.value, password.current.value);
+      seterrorMessage(message);
+
+      if (message) return;
+    } else {
+      if (!email.current.value || !password.current.value) {
+        seterrorMessage("Fields cannot be Empty!");
+        return;
+      }
+    }
+
+    if (!isSignIn) {
+      createUserWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          updateProfile(user, {
+            displayName: name.current.value,
+            photoURL:
+              "https://cdn.cookielaw.org/logos/dd6b162f-1a32-456a-9cfe-897231c7763c/4345ea78-053c-46d2-b11e-09adaef973dc/Netflix_Logo_PMS.png",
+          })
+            .then(() => {
+              const { uid, email, displayName, photoURL } = auth.currentUser;
+              dispatch(addUser({ uid, email, displayName, photoURL }));
+
+              navigate("/browse");
+            })
+            .catch((error) => {
+              seterrorMessage(error.message);
+            });
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          seterrorMessage(errorCode + "-" + errorMessage);
+        });
+    } else {
+      signInWithEmailAndPassword(
+        auth,
+        email.current.value,
+        password.current.value
+      )
+        .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          navigate("/browse");
+          // ...
+        })
+        .catch((error) => {
+          console.log({ error });
+          const errorCode = error.code;
+          // const errorMessage = error.message;
+          const errorMessage = getErrorMessage(error);
+          seterrorMessage(errorMessage);
+        });
+    }
+  };
+
   return (
     <div>
       <Header />
@@ -16,28 +105,38 @@ function Login() {
           alt="logo"
         />
       </div>
-      <form className="p-12 bg-black absolute w-3/12 my-36 mx-auto right-0 left-0 bg-opacity-80 rounded-lg">
+      <form
+        onSubmit={(e) => e.preventDefault()}
+        className="p-12 bg-black absolute w-3/12 my-36 mx-auto right-0 left-0 bg-opacity-80 rounded-lg"
+      >
         <h1 className="text-2xl text-white font-bold py-4 m-2">
           {isSignIn ? "Sign In " : "Sign Up"}
         </h1>
         {!isSignIn && (
           <input
+            ref={name}
             type="text"
             placeholder="Full Name"
-            className="p-4 my-2 w-full bg-gray-800 "
+            className="p-4 my-2 w-full bg-gray-800 text-white "
           />
         )}
         <input
+          ref={email}
           type="text"
-          placeholder="Email Adress"
-          className="p-4 my-2 w-full bg-gray-800"
+          placeholder="Email Address"
+          className="p-4 my-2 w-full bg-gray-800 text-white"
         />
         <input
+          ref={password}
           type="password"
           placeholder="Password"
-          className="p-4 my-2 w-full bg-gray-800 "
+          className="p-4 my-2 w-full bg-gray-800 text-white"
         />
-        <button className="p-4 my-6 bg-red-600 text-white font-bold w-full rounded-lg">
+        <div className="text-red-600 p-2 font-bold">{errorMessage}</div>
+        <button
+          onClick={submitHandler}
+          className="p-4 my-6 bg-red-600 text-white font-bold w-full rounded-lg"
+        >
           {isSignIn ? "Sign In " : "Sign Up"}
         </button>
         <div
