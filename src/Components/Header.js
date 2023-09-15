@@ -4,11 +4,15 @@ import { auth } from "../utils/Firebase";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser, removeUser } from "../utils/userSlice";
+import { toggleGptSearchView } from "../utils/gptSlice";
+import { AVATAR_URL, LOGO_URL, SUPPORTED_LANGUAGES } from "../utils/constants";
+import { changeLanguage } from "../utils/configSlice";
 
 const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { userDetails } = useSelector((state) => state.userData);
+  const showGptSearch = useSelector((store) => store.gpt.showGptSearch);
 
   const handleSignOut = () => {
     signOut(auth)
@@ -21,6 +25,11 @@ const Header = () => {
         navigate("/error");
       });
   };
+  const handleGPTSearch = () => {
+    console.log("clicked");
+    dispatch(toggleGptSearchView());
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -40,24 +49,49 @@ const Header = () => {
     });
     return () => unsubscribe();
   }, []);
+
+  const handleLanguageChange = (e) => {
+    dispatch(changeLanguage(e.target.value));
+  };
   return (
     <div className="absolute px-8 py-2 w-[100%] bg-gradient-to-b from-black z-10 flex flex-1 justify-between">
-      <img
-        className="w-44"
-        src="https://cdn.cookielaw.org/logos/dd6b162f-1a32-456a-9cfe-897231c7763c/4345ea78-053c-46d2-b11e-09adaef973dc/Netflix_Logo_PMS.png"
-        alt="logo"
-      />
+      <img className="w-44" src={LOGO_URL} alt="logo" />
       {userDetails?.uid && (
         <div className="flex">
+          {showGptSearch && (
+            <select
+              className="p-3 m-3 rounded-lg bg-gray-900 text-white"
+              onChange={handleLanguageChange}
+            >
+              {SUPPORTED_LANGUAGES.map((lang) => (
+                <option key={lang.identifier} value={lang.identifier}>
+                  {lang.name}
+                </option>
+              ))}
+            </select>
+          )}
+
+          <div>
+            <button
+              onClick={handleGPTSearch}
+              className="bg-purple-800 rounded-lg p-3 m-3 text-white "
+            >
+              {showGptSearch ? "Homepage" : "GPT Search"}
+            </button>
+          </div>
           <div>
             <img
-              className="w-[40px] h-[40px] m-2"
-              src="https://occ-0-2611-3647.1.nflxso.net/dnm/api/v6/K6hjPJd6cR6FpVELC5Pd6ovHRSk/AAAABY20DrC9-11ewwAs6nfEgb1vrORxRPP9IGmlW1WtKuaLIz8VxCx5NryzDK3_ez064IsBGdXjVUT59G5IRuFdqZlCJCneepU.png?r=229"
+              className="w-[40px] h-[40px] m-3"
+              src={AVATAR_URL}
               alt="logo"
             />
           </div>
+
           <div>
-            <button onClick={handleSignOut} className="bg-red-700 p-2 m-2 ">
+            <button
+              onClick={handleSignOut}
+              className="bg-red-700 p-3 m-3 rounded-lg "
+            >
               Sign Out
             </button>
           </div>
