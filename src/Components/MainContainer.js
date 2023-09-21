@@ -8,9 +8,8 @@ const MainContainer = () => {
   if (!movies) return;
   const Mainmovie = movies[0];
   const { original_title, overview, id } = Mainmovie;
-  console.log(Mainmovie);
   return (
-    <div className="relative">
+    <div className="relative sm:pt-8 md:pt-0 pt-[30%] bg-black">
       <VideoTitle title={original_title} overview={overview} />
       <VideoBackground movieId={id} />
     </div>

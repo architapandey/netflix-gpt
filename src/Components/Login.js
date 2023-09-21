@@ -8,7 +8,6 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { getErrorMessage } from "../utils/utils";
-// import { useNavigate } from "react-router-dom";
 import { updateProfile } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
@@ -19,8 +18,6 @@ function Login() {
   const [errorMessage, seterrorMessage] = useState(null);
 
   const dispatch = useDispatch();
-  // const navigate = useNavigate();
-
   const email = useRef(null);
   const password = useRef(null);
   const name = useRef(null);
@@ -53,7 +50,6 @@ function Login() {
         password.current.value
       )
         .then((userCredential) => {
-          // Signed in
           const user = userCredential.user;
           updateProfile(user, {
             displayName: name.current.value,
@@ -63,8 +59,6 @@ function Login() {
             .then(() => {
               const { uid, email, displayName, photoURL } = auth.currentUser;
               dispatch(addUser({ uid, email, displayName, photoURL }));
-
-              // navigate("/browse");
             })
             .catch((error) => {
               seterrorMessage(error.message);
@@ -82,15 +76,9 @@ function Login() {
         password.current.value
       )
         .then((userCredential) => {
-          // Signed in
           const user = userCredential.user;
-          // navigate("/browse");
-          // ...
         })
         .catch((error) => {
-          console.log({ error });
-          const errorCode = error.code;
-          // const errorMessage = error.message;
           const errorMessage = getErrorMessage(error);
           seterrorMessage(errorMessage);
         });

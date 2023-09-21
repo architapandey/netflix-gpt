@@ -14,15 +14,12 @@ const moviesSlice = createSlice({
       state.nowPlayingMovies = action.payload;
     },
     addPopularMovies: (state, action) => {
-      console.log({ action });
       state.popularMovies = action.payload;
     },
     addTopRatedMovies: (state, action) => {
-      console.log({ action });
       state.topRatedMovies = action.payload;
     },
     addUpcomingMovies: (state, action) => {
-      console.log({ action });
       state.upcomingMovies = action.payload;
     },
     addTrailerVideo: (state, action) => {

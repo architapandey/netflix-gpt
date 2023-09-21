@@ -3,7 +3,6 @@ import Login from "./Login";
 import Browse from "./Browse";
 import { createBrowserRouter } from "react-router-dom";
 import { RouterProvider } from "react-router-dom";
-import { useDispatch } from "react-redux";
 
 function Body() {
   const appRouter = createBrowserRouter([
@@ -19,8 +18,6 @@ function Body() {
   return (
     <div>
       <RouterProvider router={appRouter} />
-      {/* <Login />
-      <Browse /> */}
     </div>
   );
 }
