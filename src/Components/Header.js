@@ -43,8 +43,8 @@ const Header = () => {
     dispatch(changeLanguage(e.target.value));
   };
   return (
-    <div className="absolute px-8 py-2 w-[100%] bg-gradient-to-b from-black z-10 flex flex-1 flex-col md:flex-row justify-between">
-      <img className="w-44 mx-auto md:mx-0 " src={LOGO_URL} alt="logo" />
+    <div className="absolute px-8 sm:py-2 w-[100%] bg-gradient-to-b from-black z-10 flex flex-1 flex-col sm:flex-row justify-between">
+      <img className="w-44 mx-auto sm:mx-0 " src={LOGO_URL} alt="logo" />
       {userDetails?.uid && (
         <div className="flex justify-evenly">
           {showGptSearch && (
