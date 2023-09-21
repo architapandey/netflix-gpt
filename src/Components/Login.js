@@ -16,6 +16,7 @@ import { BG_URL } from "../utils/constants";
 function Login() {
   const [isSignIn, setIsSignIn] = useState(true);
   const [errorMessage, seterrorMessage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
   const email = useRef(null);
@@ -44,6 +45,7 @@ function Login() {
     }
 
     if (!isSignIn) {
+      setIsLoading(true);
       createUserWithEmailAndPassword(
         auth,
         email.current.value,
@@ -68,8 +70,10 @@ function Login() {
           const errorCode = error.code;
           const errorMessage = error.message;
           seterrorMessage(errorCode + "-" + errorMessage);
-        });
+        })
+        .finally(() => setIsLoading(false));
     } else {
+      setIsLoading(true);
       signInWithEmailAndPassword(
         auth,
         email.current.value,
@@ -81,19 +85,30 @@ function Login() {
         .catch((error) => {
           const errorMessage = getErrorMessage(error);
           seterrorMessage(errorMessage);
-        });
+        })
+        .finally(() => setIsLoading(false));
     }
+  };
+
+  const getBtnText = () => {
+    if (isLoading) return "Loading...";
+    if (isSignIn) return "Sign In";
+    return "Sign Up";
   };
 
   return (
     <div>
       <Header />
       <div className="absolute">
-        <img src={BG_URL} alt="logo" />
+        <img
+          className="h-[100vh] w-screen object-cover"
+          src={BG_URL}
+          alt="logo"
+        />
       </div>
       <form
         onSubmit={(e) => e.preventDefault()}
-        className="p-12 bg-black absolute w-3/12 my-36 mx-auto right-0 left-0 bg-opacity-80 rounded-lg"
+        className="p-12 bg-black absolute sm:w-1/2 xl:w-3/12 my-36 sm:mx-auto mx-6 right-0 left-0 bg-opacity-80 rounded-lg"
       >
         <h1 className="text-2xl text-white font-bold py-4 m-2">
           {isSignIn ? "Sign In " : "Sign Up"}
@@ -123,7 +138,7 @@ function Login() {
           onClick={submitHandler}
           className="p-4 my-6 bg-red-600 text-white font-bold w-full rounded-lg"
         >
-          {isSignIn ? "Sign In " : "Sign Up"}
+          {getBtnText()}
         </button>
         <div
           className="my-4p-2 text-white cursor-pointer"

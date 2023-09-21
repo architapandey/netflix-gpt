@@ -63,7 +63,7 @@ const Header = () => {
           <div>
             <button
               onClick={handleGPTSearch}
-              className="h-[44px] bg-purple-800 rounded-lg p-3 m-3 text-white text-sm"
+              className="h-[44px] bg-red-700 rounded-lg p-3 m-3 text-white text-sm"
             >
               {showGptSearch ? "Homepage" : "GPT Search"}
             </button>
@@ -77,7 +77,7 @@ const Header = () => {
           <div>
             <button
               onClick={handleSignOut}
-              className="bg-red-700   p-3 m-3  rounded-lg text-sm text-white"
+              className="bg-red-700 p-3 m-3 rounded-lg text-sm text-white"
             >
               Logout
             </button>
